@@ -46,11 +46,11 @@ type teeReadCloser struct {
 	w io.WriteCloser
 }
 
-func (t *teeReadCloser) Read(p []byte) (n int, err error) {
-	n, err = t.r.Read(p)
+func (trc *teeReadCloser) Read(p []byte) (n int, err error) {
+	n, err = trc.r.Read(p)
 	
 	if n > 0 {
-		if n, err := t.w.Write(p[:n]); err != nil {
+		if n, err := trc.w.Write(p[:n]); err != nil {
 			return n, err
 		}
 	}
@@ -58,9 +58,9 @@ func (t *teeReadCloser) Read(p []byte) (n int, err error) {
 	return
 }
 
-func (t *teeReadCloser) Close() (err error) {
-	err = t.r.Close()
-	err = t.w.Close()
+func (trc *teeReadCloser) Close() (err error) {
+	err = trc.r.Close()
+	err = trc.w.Close()
 	
 	return err
 }
