@@ -84,15 +84,15 @@ func printRequest(req *http.Request, to io.Writer) {
 }
 
 func printResponse(res *http.Response, to io.Writer) {
-	to.Write([]byte(fmt.Sprintf("%s %s\n", res.Proto, res.Status)))
+	to.Write([]byte(fmt.Sprintf("%s %s\r\n", res.Proto, res.Status)))
 	
 	for k, v := range res.Header {
 		for _, v := range v {
-			to.Write([]byte(fmt.Sprintf("%s: %s\n", k, v)))
+			to.Write([]byte(fmt.Sprintf("%s: %s\r\n", k, v)))
 		}
 	}
 	
-	to.Write([]byte("\n"))
+	to.Write([]byte("\r\n"))
 }
 
 // ---
