@@ -14,4 +14,19 @@
 	by Websecurify
 	
 
-Proxify is a man-in-the-middle proxy tool.
+Proxify is a man-in-the-middle http proxy tool.
+
+# Build Instructions
+
+Follow these steps:
+
+1. Download and install [go](http://golang.org/).
+2. Set your go home: `export GOHOME=somefolder`.
+3. Install github.com/jessevdk/go-flags with `go get http://github.com/jessevdk/go-flags`.
+4. Install github.com/websecurify/go-proxy with `go get http://github.com/websecurify/go-proxy`.
+5. Change into go-proxify project directory.
+6. Run `go build`.
+
+# Tool Usage
+
+To get started just see `proxify -h`.
