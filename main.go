@@ -8,7 +8,6 @@ import (
 	"log"
 	"fmt"
 	"time"
-	"path"
 	"regexp"
 	"net/http"
 	"encoding/hex"
@@ -19,7 +18,7 @@ import (
 // ---
 
 type Context interface {
-	getTime() int64
+	getTime() (int64)
 }
 
 // ---
@@ -28,15 +27,14 @@ type contextData struct {
 	time int64
 }
 
-func (cd contextData) getTime() int64 {
+func (cd contextData) getTime() (int64) {
     return cd.time
 }
 
-func ContextData() *contextData {
-	cd := new(contextData)
-	cd.time = time.Now().UnixNano()
-	
-	return cd
+func ContextData() (*contextData) {
+	return &contextData {
+		time: time.Now().UnixNano(),
+	}
 }
 
 // ---
@@ -65,8 +63,33 @@ func (trc *teeReadCloser) Close() (err error) {
 	return err
 }
 
-func TeeReadCloser(r io.ReadCloser, w io.WriteCloser) io.ReadCloser {
-	return &teeReadCloser{r, w}
+func TeeReadCloser(r io.ReadCloser, w io.WriteCloser) (*teeReadCloser) {
+	return &teeReadCloser {
+		r: r,
+		w: w,
+	}
+}
+
+// ---
+
+type appHandler struct {
+	p *proxy.ProxyHttpServer
+	a *http.ServeMux
+}
+
+func (ah *appHandler) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
+	if req.URL.Host == "proxify" {
+		ah.a.ServeHTTP(rw, req)
+	} else {
+		ah.p.ServeHTTP(rw, req)
+	}
+}
+
+func AppHandler(p *proxy.ProxyHttpServer) (*appHandler) {
+	return &appHandler {
+		p: p,
+		a: MakeApp(),
+	}
 }
 
 // ---
@@ -84,7 +107,11 @@ func printRequest(req *http.Request, to io.Writer) {
 }
 
 func printResponse(res *http.Response, to io.Writer) {
-	to.Write([]byte(fmt.Sprintf("%s %s\r\n", res.Proto, res.Status)))
+	if res.Status == "" {
+		to.Write([]byte(fmt.Sprintf("%s %d %s\r\n", res.Proto, res.StatusCode, http.StatusText(res.StatusCode))))
+	} else {
+		to.Write([]byte(fmt.Sprintf("%s %s\r\n", res.Proto, res.Status)))
+	}
 	
 	for k, v := range res.Header {
 		for _, v := range v {
@@ -99,7 +126,8 @@ func printResponse(res *http.Response, to io.Writer) {
 
 var opts struct {
 	Port int `short:"p" long:"port" description:"Choose port to listen to" default:"8080"`
-	Dump string `short:"d" long:"dump" description:"Dump requests and responses to files."`
+	Dump bool `short:"d" long:"dump" description:"Dump requests and responses to files."`
+	App bool `short:"a" long:"app" description:"Assign proxify web app from ./app/."`
 	Mitm bool `short:"m" long:"mitm" description:"Perform ssl man-in-the-middle"`
 	Transactions bool `short:"t" long:"transactions" description:"Print transactions"`
 	Hexdump bool `short:"x" long:"hexdump" description:"Hex dump both requests and responses"`
@@ -128,25 +156,11 @@ func main() {
 		p.OnRequest(proxy.ReqHostMatches(regexp.MustCompile("^.*$"))).HandleConnect(proxy.AlwaysMitm)
 	}
 	
-	if opts.Dump != "" {
-		stat, err := os.Stat(opts.Dump)
-		
-		if os.IsNotExist(err) {
-			fmt.Fprintf(os.Stderr, "path %s is not found\n", opts.Dump)
-			
-			os.Exit(1)
-		}
-		
-		if !stat.IsDir() {
-			fmt.Fprintf(os.Stderr, "path %s is not directory\n", opts.Dump)
-			
-			os.Exit(1)
-		}
-		
+	if opts.Dump {
 		p.OnRequest().DoFunc(func (req *http.Request, ctx *proxy.ProxyCtx) (*http.Request, *http.Response) {
 			if req != nil {
 				cd := ctx.UserData.(Context)
-				file, err := os.Create(path.Join(opts.Dump, fmt.Sprintf("%d.request", cd.getTime())))
+				file, err := os.Create(fmt.Sprintf("%d.request", cd.getTime()))
 				
 				if err == nil {
 					printRequest(req, file)
@@ -160,10 +174,10 @@ func main() {
 			return req, nil
 		})
 		
-		p.OnResponse().DoFunc(func (res *http.Response, ctx *proxy.ProxyCtx) *http.Response {
+		p.OnResponse().DoFunc(func (res *http.Response, ctx *proxy.ProxyCtx) (*http.Response) {
 			if res != nil {
 				cd := ctx.UserData.(Context)
-				file, err := os.Create(path.Join(opts.Dump, fmt.Sprintf("%d.response", cd.getTime())))
+				file, err := os.Create(fmt.Sprintf("%d.response", cd.getTime()))
 				
 				if err == nil {
 					printResponse(res, file)
@@ -180,13 +194,17 @@ func main() {
 	
 	if opts.Transactions {
 		p.OnRequest().DoFunc(func (req *http.Request, ctx *proxy.ProxyCtx) (*http.Request, *http.Response) {
-			printRequest(req, os.Stdout)
+			if req != nil {
+				printRequest(req, os.Stdout)
+			}
 			
 			return req, nil
 		})
 		
-		p.OnResponse().DoFunc(func (res *http.Response, ctx *proxy.ProxyCtx) *http.Response {
-			printResponse(res, os.Stdout)
+		p.OnResponse().DoFunc(func (res *http.Response, ctx *proxy.ProxyCtx) (*http.Response) {
+			if res != nil {
+				printResponse(res, os.Stdout)
+			}
 			
 			return res
 		})
@@ -202,7 +220,7 @@ func main() {
 			return req, nil
 		})
 		
-		p.OnResponse().DoFunc(func (res *http.Response, ctx *proxy.ProxyCtx) *http.Response {
+		p.OnResponse().DoFunc(func (res *http.Response, ctx *proxy.ProxyCtx) (*http.Response) {
 			if res != nil && res.Body != nil {
 				dumper := hex.Dumper(os.Stdout)
 				res.Body = TeeReadCloser(res.Body, dumper)
@@ -216,5 +234,11 @@ func main() {
 		log.Print(fmt.Sprintf("listening on %d", opts.Port))
 	}
 	
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", opts.Port), p))
+	if opts.App {
+		a := AppHandler(p)
+		
+		log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", opts.Port), a))
+	} else {
+		log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", opts.Port), p))
+	}
 }
