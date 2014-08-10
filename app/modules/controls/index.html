@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Controls</title>
+		
+		<link type="text/css" rel="stylesheet" href="/bundles/normalize/normalize.css" media="screen"/>
+		
+		<link type="text/css" rel="stylesheet" href="/common/styles/fonts.css" media="screen"/>
+		<link type="text/css" rel="stylesheet" href="/common/styles/scrollbars.css" media="screen"/>
+		
+		<link type="text/css" rel="stylesheet" href="/bundles/fontawesome/css/font-awesome.min.css" media="screen"/>
+		
+		<script type="text/javascript" src="/bundles/jquery/jquery-1.9.1.min.js"></script>
+		
+		<link type="text/css" rel="stylesheet" href="/modules/controls/index.css" media="screen"/>
+		<script type="text/javascript" src="/modules/controls/index.js"></script>
+	</head>
+	
+	<body>
+		<div id="tabbar">
+			<a href="#request" class="tab selected"><span>Request</span></a>
+			<a href="#response" class="tab"><span>Response</span></a>
+		</div>
+		
+		<div id="request" class="editor"><iframe id="requestEditor" src="/modules/editor/"></iframe></div>
+		<div id="response" class="editor"><iframe id="responseEditor" src="/modules/editor/"></iframe></div>
+	</body>
+</html>

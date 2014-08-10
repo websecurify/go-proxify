@@ -1,0 +1,78 @@
+* {
+	font-family: "Open Sans";
+	font-size: 10px;
+	-webkit-user-select: none;
+}
+
+/* ------------------------------------------------------------------------ */
+
+#grid {
+	top: 0px;
+	bottom: 0px;
+	left: 0px;
+	right: 0px;
+	position: absolute;
+}
+
+/* ------------------------------------------------------------------------ */
+
+.slick-header {
+	background: #2b2b2b;
+}
+
+.slick-header-columns {
+	background: #2b2b2b;
+	height: 40px;
+}
+
+.slick-header-column {
+	margin-top: 8px ! important;
+	border-right: 0px ! important;
+}
+
+.slick-resizable-handle {
+	border-left: 1px solid #323232;
+}
+
+.slick-column-name {
+	font-weight: lighter;
+	font-size: 12px;
+	color: #a4a4a4;
+	margin-top: 20px;
+	text-transform: lowercase;
+}
+
+.slick-row:hover {
+	background: #dddddd;
+}
+
+.slick-row > .selected {
+	background: #3690e6;
+	color: #ffffff;
+}
+
+.slick-cell {
+	border: 0px ! important;
+}
+
+/* ------------------------------------------------------------------------ */
+
+.slick-row:not(:hover).image-transaction {
+	background: #ffffd7;
+}
+
+.slick-row:not(:hover).informational-transaction {
+	background: #43b7bc;
+}
+
+.slick-row:not(:hover).redirection-transaction {
+	background: #e7912a;
+}
+
+.slick-row:not(:hover).clienterror-transaction {
+	background: #d85837;
+}
+
+.slick-row:not(:hover).servererror-transaction {
+	background: #d85837;
+}

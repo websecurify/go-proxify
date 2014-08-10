@@ -1,0 +1,45 @@
+button   ,
+textarea ,
+select   ,
+input    {
+	outline: none;
+	padding: 10px;
+	border: 1px solid #666666;
+	box-sizing: border-box;
+	-webkit-box-sizing:border-box;
+}
+
+button:disabled   ,
+textarea:disabled ,
+select:disabled   ,
+input:disabled    {
+	color: #cccccc;
+	border: 1px solid #cccccc;
+}
+
+button               ,
+input[type="submit"] ,
+input[type="reset"]  {
+	color: #ffffff;
+	cursor: pointer;
+	background: #666666;
+	text-transform: lowercase;
+}
+
+button:hover               ,
+input[type="submit"]:hover ,
+input[type="reset"]:hover  {
+	color: #ffffff;
+	background: #888888;
+	border: 1px solid #888888;
+}
+
+button:disabled                         ,
+button[class~="disabled"]               ,
+input[type="submit"]:disabled           ,
+input[type="submit"][class~="disabled"] ,
+input[type="reset"]:disabled            ,
+input[type="reset"][class~="disabled"]  {
+	background: #cccccc;
+	border: 1px solid #cccccc;
+}
