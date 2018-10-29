@@ -1,4 +1,7 @@
-	
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/c7fb154c94164937b60bbd917c94d12a)](https://www.codacy.com/app/Websecurify/go-proxify?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=websecurify/go-proxify&amp;utm_campaign=Badge_Grade)
+[![Follow on Twitter](https://img.shields.io/twitter/follow/websecurify.svg?logo=twitter)](https://twitter.com/websecurify)
+
+
 	     ___         ___           ___           ___                       ___               
 	    /  /\       /  /\         /  /\         /__/|        ___          /  /\        ___   
 	   /  /::\     /  /::\       /  /::\       |  |:|       /  /\        /  /:/_      /__/|  
